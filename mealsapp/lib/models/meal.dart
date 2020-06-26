@@ -15,13 +15,13 @@ luxury
 
 class Meal{
 
-  String id;
-  String title;
-  List<String> categories;
-  List<String> steps;
-  bool isVegan;
+  final String id;
+  final String title;
+  final List<String> categories;
+  final List<String> steps;
+  final bool isVegan;
 
-  Meal({
+  const Meal({
     @required this.id,
     @required this.title,
     @required this.categories,

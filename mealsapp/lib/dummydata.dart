@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './models/category.dart';
+import './models/meal.dart';
 
 const dummydata = const [
 
@@ -81,7 +82,51 @@ Category(
 const dummymeals = const[
 
   Meal(
-    
-  )
+    id: '1',
+    title: 'tomato sauce',
+    categories: [
+      'c1','c2'
+    ],
+    steps: [
+      'add tomato','add water'
+    ],
+    isVegan: true
+  ),
+
+  Meal(
+    id: '2',
+    title: 'sauce',
+    categories: [
+      'c4','c7'
+    ],
+    steps: [
+      'add tomato','add water'
+    ],
+    isVegan: false
+  ),
+
+  Meal(
+    id: '3',
+    title: 'white sauce',
+    categories: [
+      'c9','c4'
+    ],
+    steps: [
+      'add tomato','add water'
+    ],
+    isVegan: true
+  ),
+
+  Meal(
+    id: '4',
+    title: 'green sauce',
+    categories: [
+      'c3','c7'
+    ],
+    steps: [
+      'add tomato','add water'
+    ],
+    isVegan: false
+  ),
 
 ];
