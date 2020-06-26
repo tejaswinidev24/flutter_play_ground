@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 //import './categorymealsscreen.dart';
 
 class CategoryItem extends StatelessWidget {
+
+  
 final String id;
 final String title;
 final Color color;

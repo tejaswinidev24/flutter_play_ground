@@ -8,6 +8,7 @@ class CategoryMeals extends StatelessWidget {
   
 
   CategoryMeals(this.categoryid, this.categorytitle);*/
+  static const routeName = '/category-meals';
 
 
   @override

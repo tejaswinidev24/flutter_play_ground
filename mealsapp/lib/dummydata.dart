@@ -77,3 +77,11 @@ Category(
 
 
 ];
+
+const dummymeals = const[
+
+  Meal(
+    
+  )
+
+];
