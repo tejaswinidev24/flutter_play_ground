@@ -5,11 +5,11 @@ import './categoryitem.dart';
 class CategoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return /*Scaffold(
           appBar: AppBar(
             title: Text('Meal'),
           ),
-          body: GridView(
+          body: */GridView(
             padding: const EdgeInsets.all(25),
         children: dummydata.map((catdata) =>
           CategoryItem(id: catdata.id,title:catdata.title, color: catdata.color)
@@ -23,7 +23,7 @@ class CategoryScreen extends StatelessWidget {
           crossAxisSpacing: 20,
           mainAxisSpacing: 20,
           ),
-        ),
+        
     );
   }
 }
