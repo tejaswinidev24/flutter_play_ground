@@ -5,19 +5,31 @@ import './maindrawer.dart';
 class FilterScreen extends StatefulWidget {
   static const routeName = '/filters';
 
+  final Function saveFilters;
+  final Map<String, bool> currentFilters;
+
+  FilterScreen(this.currentFilters, this.saveFilters);
+
   @override
   _FilterScreenState createState() => _FilterScreenState();
 }
 
 class _FilterScreenState extends State<FilterScreen> {
-  bool isVegan = false;
-  bool isGluten = false;
+  bool _isVegan = false;
+  bool _isGluten = false;
+
+  initState()
+  {
+    _isVegan = widget.currentFilters['vegan'];
+    _isGluten = widget.currentFilters['gluten'];
+    super.initState();
+  }
 
   Widget buildSwitch(String title, String description, bool currentValue, Function updateValue)
   {
     return SwitchListTile(
                    title: Text(title),
-                   value: isVegan,
+                   value: currentValue,
                    subtitle: Text(description),
                    onChanged: updateValue,
                    );
@@ -28,6 +40,15 @@ class _FilterScreenState extends State<FilterScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Filters'),
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.save), onPressed: () {
+          final selectedFilters= {
+              'gluten':false,
+              'vegan': false,
+              };
+            widget.saveFilters(selectedFilters);
+            }),
+        ],
       ),
       drawer: MainDrawer(),
            body: Column(children: <Widget>[
@@ -39,12 +60,21 @@ class _FilterScreenState extends State<FilterScreen> {
              ),
              Expanded(child: ListView(
                children: <Widget>[
-                 buildSwitch('Vegan', 'It is Vegan meal', isVegan, 
+                 buildSwitch('Vegan', 'It is Vegan meal', _isVegan, 
                  (newValue){
                         setState(() {
-                          isVegan = newValue;
-                        });
-                 }
+                          _isVegan = newValue;
+                        }
+                        );
+                        }
+                        ),
+                        buildSwitch('Gluten', 'Include only Gluten meal', _isGluten, 
+                 (newValue){
+                        setState(() {
+                          _isGluten = newValue;
+                        }
+                        );
+                        }
                         ),
                  /*SwitchListTile(
                    title: Text('Vegan'),
@@ -60,8 +90,7 @@ class _FilterScreenState extends State<FilterScreen> {
 
                ],
              ),
-            )
-
+            ),
            ],
     ),);
   }
