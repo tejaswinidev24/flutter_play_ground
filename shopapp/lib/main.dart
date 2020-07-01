@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopapp/screen/orderscreen.dart';
+import './screen/cartscreen.dart';
+import './providers/cart.dart';
+import './providers/orders.dart';
+import './screen/orderscreen.dart';
 import './screen/productoverviewscreen.dart';
 import './screen/productdetailscreen.dart';
 import './providers/products.dart';
@@ -13,8 +18,18 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-        return ChangeNotifierProvider(
-      create: (ctx) => Products(),
+        return MultiProvider(providers: [
+          ChangeNotifierProvider(
+        create: (ctx) => Products(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => Cart(),
+      ),
+      ChangeNotifierProvider(
+        create: (ctx) => Orders(),
+        ),
+        ],
+        
           child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -25,6 +40,8 @@ class MyApp extends StatelessWidget {
         home: ProductScreen(),
         routes: {
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+          CartScreen.routeName: (ctx) => CartScreen(),
+          OrderScreen.routeName: (ctx) => OrderScreen(),
         },
       ),
     );

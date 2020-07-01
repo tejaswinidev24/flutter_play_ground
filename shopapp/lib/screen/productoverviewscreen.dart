@@ -1,8 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shopapp/providers/cart.dart';
+import '../widgets/appdrawer.dart';
+import 'package:shopapp/widgets/badge.dart';
+//import 'package:provider/provider.dart';
+//import 'package:shopapp/providers/product.dart';
 //import '../models/product.dart';
+//import '../providers/products.dart';
 import '../widgets/productgrid.dart';
+import 'cartscreen.dart';
 //import '../widgets/productitem.dart';
-class ProductScreen extends StatelessWidget {
+
+enum Filteroptions{
+
+  Favorites,
+  All
+
+  }
+
+class ProductScreen extends StatefulWidget {
+
+  
   /*final List <Product> loadedProducts = [
     Product(
       id: 'p1',
@@ -39,12 +57,60 @@ class ProductScreen extends StatelessWidget {
   
   ];*/
   @override
+  _ProductScreenState createState() => _ProductScreenState();
+}
+
+class _ProductScreenState extends State<ProductScreen> {
+  var _showFavonly = false;
+  @override
   Widget build(BuildContext context) {
+    //final productsContainer = Provider.of<Products>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text('MyShopping'),
+        actions: <Widget>[
+          PopupMenuButton(
+            onSelected: (Filteroptions selectedValue){
+              setState(() {
+                if(selectedValue == Filteroptions.Favorites)
+              {
+                _showFavonly = true;
+                //productsContainer.showFavoritesonly();
+
+              }else{
+                _showFavonly=false;
+                  //productsContainer.showAll();
+              }
+                
+              });
+              
+            },
+            icon: Icon(Icons.more_vert),
+            itemBuilder: (_) =>[
+                PopupMenuItem(
+                  child: Text('Only Favorites'), value: Filteroptions.Favorites,
+                  ),
+                  PopupMenuItem(child: Text('Show All'), value:Filteroptions.All),
+            ],
+            ),
+            Consumer<Cart>(builder:(_, cart, ch) => Badge(
+              child: ch,
+                  value: cart.itemCount.toString(),
+                  ),
+                  child: IconButton(
+                icon: Icon(
+                  Icons.shopping_cart), 
+                  onPressed: ()
+                  {
+                    Navigator.of(context).pushNamed(CartScreen.routeName);
+                  }
+                  ), 
+                  ), 
+            
+        ],
       ),
-      body: ProductGrid(),
+      drawer: AppDrawer(),
+      body: ProductGrid(_showFavonly),
     );
   }
 }
