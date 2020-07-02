@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopapp/providers/cart.dart';
+import 'package:shopapp/providers/product.dart';
+import '../providers/cart.dart';
+import '../providers/products.dart';
 import '../widgets/appdrawer.dart';
-import 'package:shopapp/widgets/badge.dart';
+import '../widgets/badge.dart';
 //import 'package:provider/provider.dart';
 //import 'package:shopapp/providers/product.dart';
 //import '../models/product.dart';
@@ -62,6 +64,36 @@ class ProductScreen extends StatefulWidget {
 
 class _ProductScreenState extends State<ProductScreen> {
   var _showFavonly = false;
+  var _isInit = true;
+  var _isLoading = false;
+
+  @override
+  void initState() {
+    //Provider.of<Products>(context).fetchandSetProduct();
+    /*Future.delayed(Duration.zero).then((_) {
+      Provider.of<Products>(context).fetchandSetProduct();
+    });*/
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if(_isInit)
+    {
+      setState(() {
+        _isLoading = true;
+      });
+      
+      Provider.of<Products>(context).fetchandSetProduct().then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     //final productsContainer = Provider.of<Products>(context, listen: false);
@@ -110,7 +142,10 @@ class _ProductScreenState extends State<ProductScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: ProductGrid(_showFavonly),
+      body: _isLoading ? Center(
+        child: CircularProgressIndicator(),
+      ) : 
+      ProductGrid(_showFavonly),
     );
   }
 }

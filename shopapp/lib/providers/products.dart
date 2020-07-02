@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import '../models/httpException.dart';
 import '../providers/product.dart';
 
 
 class Products with ChangeNotifier{
   List<Product> _items = [
-    Product(
+    /*Product(
       id: 'p1',
       title: 'Red Shirt',
       description: 'A red shirt - it is pretty red!',
@@ -36,7 +39,7 @@ class Products with ChangeNotifier{
       price: 49.99,
       imageUrl:
           'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-    ),
+    ),*/
   ];
 
   //var _showFavoritesonly = false;
@@ -70,21 +73,77 @@ class Products with ChangeNotifier{
     return _items.firstWhere((prod) => prod.id == id);
   }
 
-  void addProduct(Product product)
+  Future<void> fetchandSetProduct () async
+{
+  const url = 'https://flutterupdate-81649.firebaseio.com/products.json';
+  try{
+    final response = await http.get(url);
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    if(extractedData == null)
+    {
+      return;
+    }
+    final List<Product> loadedproducts = [];
+    extractedData.forEach((prodId, prodData) {
+      loadedproducts.add(Product(
+        id: prodId, 
+        title: prodData['title'], 
+        description: prodData['description'], 
+        price: prodData['price'], 
+        imageUrl: prodData['imageUrl'],
+        isFavorite: prodData['isFavorite'],
+        ),  
+      );
+    });
+    _items = loadedproducts;
+    notifyListeners();
+  }catch(error){
+    throw error;
+  }
+}
+  Future<void> addProduct(Product product) async
   {
-    final newProduct = Product(
-      id: DateTime.now().toString(), 
+    try {
+    const url = 'https://flutterupdate-81649.firebaseio.com/products.json';
+    final response =  await http.post(url, body:json.encode({
+      'title': product.title,
+      'description': product.description,
+      'price' : product.price,
+      'imageUrl': product.imageUrl,
+      'isFavorite':product.isFavorite,
+    }),
+    );
+    //)//.then((response){
+      //print(json.decode(response.body));
+      final newProduct = Product(
+      id: json.decode(response.body)['name'], 
       title: product.title, 
       description: product.description, 
       price: product.price, 
       imageUrl: product.imageUrl);
       _items.add(newProduct);
     notifyListeners();
+    }catch (error){
+      print(error);
+      throw error;
+    }
+    
+    /*.catchError((error){
+      print(error);
+      throw error;
+    });*/
   }
 
-  void updateProduct(String id,Product newProduct)
+  void updateProduct(String id,Product newProduct) async
   {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
+    final url = 'https://flutterupdate-81649.firebaseio.com/products/$id.json';
+     await http.patch(url, body: json.encode({
+      'title': newProduct.title,
+      'description': newProduct.description,
+      'price': newProduct.price,
+      'imageUrl': newProduct.imageUrl
+    }));
     if(prodIndex >= 0)
     {
       _items[prodIndex] = newProduct;
@@ -94,10 +153,26 @@ class Products with ChangeNotifier{
     }
     
   }
-  void deleteProduct(String id)
+  Future<void> deleteProduct(String id) async
   {
-    _items.removeWhere((prod) => prod.id == id );
+    final url = 'https://flutterupdate-81649.firebaseio.com/products/$id.json';
+    final existingProductIndex = _items.indexWhere((prod) => prod.id == id );
+    var existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex);
     notifyListeners();
+    final response = await http.delete(url);
+        if(response.statusCode >= 450)
+        {
+          _items.insert(existingProductIndex, existingProduct);
+           notifyListeners();
+          throw HttpException('Could not delete product.');
+        }
+        existingProduct = null;
+      
+      //_items.insert(existingProductIndex, existingProduct);
+    
+    //_items.removeWhere((prod) => prod.id == id );
+    //notifyListeners();
   }
 
 }
