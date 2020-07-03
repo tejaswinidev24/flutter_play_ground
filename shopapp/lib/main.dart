@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import './providers/auth.dart';
 import './screen/cartscreen.dart';
 import './providers/cart.dart';
 import './providers/orders.dart';
@@ -8,6 +9,7 @@ import './screen/editproductscreen.dart';
 import './screen/productoverviewscreen.dart';
 import './screen/productdetailscreen.dart';
 import './screen/userproductscreen.dart';
+import './screen/auth_screen.dart';
 import './providers/products.dart';
 
 void main() {
@@ -20,25 +22,34 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
         return MultiProvider(providers: [
-          ChangeNotifierProvider(
-        create: (ctx) => Products(),
-        ),
+          ChangeNotifierProvider.value(value: Auth()),
+          /*ChangeNotifierProvider(
+        create: (ctx) => Auth(),
+        ),*/
+        ChangeNotifierProxyProvider<Auth, Products>(
+          //create: null,
+          update: (ctx, auth, prevproducts) => Products(
+          auth.token,
+          auth.userId,
+          prevproducts == null ? [] : prevproducts.items), 
+          ),
         ChangeNotifierProvider(
           create: (ctx) => Cart(),
       ),
-      ChangeNotifierProvider(
-        create: (ctx) => Orders(),
+      ChangeNotifierProxyProvider<Auth, Orders>(
+        update: (ctx, auth , previousOrders) => Orders(auth.token, previousOrders == null ? [] : previousOrders.orders),
         ),
         ],
         
-          child: MaterialApp(
+          child: Consumer<Auth>(builder: (ctx, auth, _) => 
+          MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.purple,
           accentColor: Colors.deepOrange,
           fontFamily: 'Lato',
         ),
-        home: ProductScreen(),
+        home: auth.isAuth ? ProductScreen() : AuthScreen(),
         routes: {
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
@@ -46,7 +57,7 @@ class MyApp extends StatelessWidget {
           UserProductScreen.routeName: (ctx) => UserProductScreen(),
           EditProductScreen.routeName: (ctx) => EditProductScreen(),
         },
-      ),
+      ),),
     );
   }
 }

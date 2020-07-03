@@ -63,6 +63,7 @@ class ProductScreen extends StatefulWidget {
 }
 
 class _ProductScreenState extends State<ProductScreen> {
+  //static const routeName = '/productoverviewscreen';
   var _showFavonly = false;
   var _isInit = true;
   var _isLoading = false;
